@@ -2,6 +2,7 @@ package com.tuto.Dao;
 
 import java.util.List;
 
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -25,6 +26,24 @@ public class PersonneDao {
 		         System.out.println("ERREUR DE L'OBJET SESSION FACTORY" + ex);
 		         throw new ExceptionInInitializerError(ex); 
 		      }
+		}
+		public Personne getPersonne(String id) {
+			Session session = sf.openSession();
+			Transaction tr = null;
+			try {
+				tr =  session.beginTransaction();
+				Personne p = (Personne)session.get(Personne.class,Integer.parseInt(id));
+				tr.commit();
+				return  p;
+			
+			} catch (Exception e) {
+				System.out.println("ERREUR recuperation de l'id \n"+id);
+				e.printStackTrace();
+			}
+			finally {
+				session.close();
+			}
+			return null;
 		}
 		
 		public void addPersonne(Personne p) {
@@ -84,7 +103,28 @@ public class PersonneDao {
 			}
 		}
 		
-	
+	 
+		public void update(String id,Personne p) {
+			 Session session = sf.openSession();
+		      Transaction tx = null;
+		      
+		      try {
+		         tx = session.beginTransaction();
+		         Personne personne = (Personne)session.get(Personne.class, Integer.parseInt(id)); 
+		         personne.setAdrssIp(p.getAdrssIp());
+		         personne.setEmail(p.getEmail());
+		         personne.setGenre(p.getGenre());
+		         personne.setNom(p.getNom());
+		         personne.setPrenom(p.getPrenom());
+				 session.update(personne); 
+		         tx.commit();
+		      } catch (HibernateException e) {
+		         if (tx!=null) tx.rollback();
+		         e.printStackTrace(); 
+		      } finally {
+		         session.close(); 
+		      }
+		}
 	}
 
 	

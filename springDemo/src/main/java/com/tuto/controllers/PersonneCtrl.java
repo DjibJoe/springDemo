@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.websocket.server.PathParam;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -56,5 +57,30 @@ public class PersonneCtrl {
 		model.setViewName("resultat");	
 		model.addObject("rs","djohar");
 		return model;
+	}
+	
+	@RequestMapping(value="/modifier",method= RequestMethod.GET)
+	public ModelAndView modifier(HttpServletRequest req, HttpServletResponse rep) {
+		pdao = new PersonneDao();
+		ModelAndView model = new ModelAndView();		
+		model.setViewName("modif");	
+		model.addObject("personne",pdao.getPersonne(req.getParameter("id")));
+		return model;
+		
+	}
+	@RequestMapping(value="/update",method= RequestMethod.POST)
+	public ModelAndView update(HttpServletRequest req, HttpServletResponse rep) {
+		Personne p = new Personne();
+		pdao = new PersonneDao();
+		p.setNom(req.getParameter("nom"));
+		p.setPrenom(req.getParameter("prenom"));
+		p.setEmail(req.getParameter("email"));
+		p.setGenre(req.getParameter("genre"));
+		p.setAdrssIp(req.getParameter("ip"));
+		pdao.update(req.getParameter("id"),p);
+		ModelAndView model = new ModelAndView();
+		model.setViewName("redirect:/");		
+		return model;
+		
 	}
 }
